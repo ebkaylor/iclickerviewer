@@ -229,11 +229,55 @@ http://railscasts.com/episodes/324-passing-data-to-javascript
       { :type => "button",
         :onclick => "compare_images('#{question_img_url}')" } %>
     </td>
-    <td class="imagecolumn">
-      <% barchart_img_url = "https://s3.amazonaws.com/iclickerviewer/%s/Images/%s_C%d.jpg" %
-        [@course.folder_name, @class_period.session_code, question.question_index]
-      %>
-      <%= image_tag(barchart_img_url, :class => "myImg") %>
+    <td >
+      <% array1 = [q.object.response_a, q.object.response_b, q.object.response_c, q.object.response_d, q.object.response_e] %>
+      <% num_responses = array1.sum %>
+      <% prop_array2 = array1.map{ |i| i.to_f / num_responses} %>
+      <%
+      data = {
+        labels: ["A", "B", "C", "D", "E"],
+        datasets: [ {
+          background_color: ['rgba(255, 99, 132, 1)',
+                'rgba(54, 162, 235, 1)',
+                'rgba(255, 206, 86, 1)',
+                'rgba(75, 192, 192, 1)',
+                'rgba(153, 102, 255, 1)'
+                ],
+          border_color: ['rgba(255,99,132,1)',
+                'rgba(54, 162, 235, 1)',
+                'rgba(255, 206, 86, 1)',
+                'rgba(75, 192, 192, 1)',
+                'rgba(153, 102, 255, 1)'
+                ],
+          #display votes as proportions
+          #data: prop_array2
+          # display votes numerically
+          data: array1
+        }
+        ]
+      }
+
+        %>
+        <% options = {
+          legend: { display: false},
+          title: {
+            display: true,
+            text: 'Votes Chart'
+        },
+        scales: {
+            yAxes: [{
+                ticks: {
+                  #votes as proportion
+                  #max: 1,
+                  #votes numericallly
+                  max: num_responses,
+                  beginAtZero:true
+                }
+            }]
+        }
+    } %>
+
+      <%= bar_chart data, options %>
     </td>
     <td>
       <table>
